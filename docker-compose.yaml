@@ -1,0 +1,25 @@
+services:
+  movies-service:
+    build: ./movies-service
+    secrets:
+      - movies_service_env
+    ports:
+      - "3001:3001"
+    networks:
+      - microservices-net
+
+  random-movies-service:
+    build: ./random-movies-service
+    ports:
+      - "3002:3002"
+    environment:
+      - MOVIES_SERVICE_URL=http://movies-service:3001
+    networks:
+      - microservices-net
+
+secrets:
+  movies_service_env:
+    file: ./movies-service/.env
+
+networks:
+  microservices-net:

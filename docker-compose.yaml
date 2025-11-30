@@ -17,6 +17,25 @@ services:
     networks:
       - microservices-net
 
+  rating-service:
+    build: ./rating-service
+    ports:
+      - "3003:3003"
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq
+    depends_on:
+      - rabbitmq
+    networks:
+      - microservices-net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - microservices-net
+
 secrets:
   movies_service_env:
     file: ./movies-service/.env

@@ -39,6 +39,13 @@ services:
     networks:
       - microservices-net
 
+  frontend-service:
+    build: ./frontend-service
+    ports:
+      - "3000:3000"
+    networks:
+      - microservices-net
+
   rabbitmq:
     image: rabbitmq:4-management
     ports:

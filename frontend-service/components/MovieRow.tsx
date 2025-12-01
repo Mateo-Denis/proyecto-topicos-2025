@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Movie } from '@/lib/api';
 import MovieCard from './MovieCard';
@@ -12,6 +12,23 @@ interface MovieRowProps {
 
 export default function MovieRow({ title, movies }: MovieRowProps) {
     const rowRef = useRef<HTMLDivElement>(null);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(false);
+
+    const checkScrollability = () => {
+        if (rowRef.current) {
+            const { scrollLeft, scrollWidth, clientWidth } = rowRef.current;
+            setCanScrollLeft(scrollLeft > 0);
+            setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 1);
+        }
+    };
+
+    useEffect(() => {
+        checkScrollability();
+        // Check again after a short delay to ensure content is loaded
+        const timer = setTimeout(checkScrollability, 100);
+        return () => clearTimeout(timer);
+    }, [movies]);
 
     const scroll = (direction: 'left' | 'right') => {
         if (rowRef.current) {
@@ -21,6 +38,8 @@ export default function MovieRow({ title, movies }: MovieRowProps) {
                 : scrollLeft + clientWidth / 2;
 
             rowRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
+            // Check scrollability after animation completes
+            setTimeout(checkScrollability, 400);
         }
     };
 
@@ -33,29 +52,34 @@ export default function MovieRow({ title, movies }: MovieRowProps) {
             </h2>
 
             <div className="relative group">
-                <button
-                    className="absolute left-0 top-0 bottom-0 z-40 bg-black bg-opacity-50 w-12 hover:bg-opacity-70 hidden group-hover:flex items-center justify-center transition"
-                    onClick={() => scroll('left')}
-                >
-                    <ChevronLeft className="w-8 h-8 text-white" />
-                </button>
+                {canScrollLeft && (
+                    <button
+                        className="absolute left-0 top-0 bottom-0 z-40 bg-black/20 w-12 hover:bg-black/40 hidden group-hover:flex items-center justify-center transition-all duration-200"
+                        onClick={() => scroll('left')}
+                    >
+                        <ChevronLeft className="w-8 h-8 text-white" />
+                    </button>
+                )}
 
                 <div
                     ref={rowRef}
-                    className="flex space-x-4 overflow-x-scroll scrollbar-hide py-4"
+                    className="flex space-x-4 overflow-x-scroll scrollbar-hide py-4 px-2"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    onScroll={checkScrollability}
                 >
                     {movies.map((movie) => (
                         <MovieCard key={movie._id} movie={movie} />
                     ))}
                 </div>
 
-                <button
-                    className="absolute right-0 top-0 bottom-0 z-40 bg-black bg-opacity-50 w-12 hover:bg-opacity-70 hidden group-hover:flex items-center justify-center transition"
-                    onClick={() => scroll('right')}
-                >
-                    <ChevronRight className="w-8 h-8 text-white" />
-                </button>
+                {canScrollRight && (
+                    <button
+                        className="absolute right-0 top-0 bottom-0 z-40 bg-black/20 w-12 hover:bg-black/40 hidden group-hover:flex items-center justify-center transition-all duration-200"
+                        onClick={() => scroll('right')}
+                    >
+                        <ChevronRight className="w-8 h-8 text-white" />
+                    </button>
+                )}
             </div>
         </div>
     );

@@ -22,9 +22,13 @@ export interface Movie {
 
 export const api = {
     movies: {
-        getAll: async (page = 1, limit = 20) => {
+        getAll: async (page = 1, limit = 20, hasPoster = false) => {
+            const params: any = { page, limit };
+            if (hasPoster) {
+                params.poster = true;
+            }
             const response = await axios.get(`${MOVIES_SERVICE_URL}/movies`, {
-                params: { page, limit }
+                params
             });
             return response.data.data;
         },
@@ -46,9 +50,17 @@ export const api = {
         }
     },
     random: {
-        getFeatured: async (limit = 1) => {
-            const response = await axios.get(`${RANDOM_MOVIES_SERVICE_URL}/randommovies`, {
-                params: { limit }
+        getFeatured: async (limit = 1, genre?: string, hasPoster = false) => {
+            const params: any = { limit };
+            if (genre) {
+                params.genre = genre;
+            }
+            if (hasPoster) {
+                params.poster = true;
+            }
+            // Use movies-service /random endpoint which supports genre filtering
+            const response = await axios.get(`${MOVIES_SERVICE_URL}/movies/random`, {
+                params
             });
             return response.data;
         }

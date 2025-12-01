@@ -10,9 +10,14 @@ router.get("/", async (req, res) => {
 
     const skip = (page - 1) * limit;
 
+    const query = {};
+    if (req.query.poster === 'true') {
+        query.poster = { $exists: true, $ne: null };
+    }
+
     const [movies, total] = await Promise.all([
-        Movie.find().skip(skip).limit(limit),
-        Movie.countDocuments()
+        Movie.find(query).sort({ year: -1 }).skip(skip).limit(limit),
+        Movie.countDocuments(query)
     ]);
 
     res.json({
@@ -30,7 +35,21 @@ router.get("/", async (req, res) => {
 router.get("/random", async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 5;
-        const movies = await Movie.aggregate([{ $sample: { size: limit } }]);
+        const { genre, poster } = req.query;
+
+        const pipeline = [];
+
+        const match = {};
+        if (genre) match.genres = { $in: [new RegExp(genre, "i")] };
+        if (poster === 'true') match.poster = { $exists: true, $ne: null };
+
+        if (Object.keys(match).length > 0) {
+            pipeline.push({ $match: match });
+        }
+
+        pipeline.push({ $sample: { size: limit } });
+
+        const movies = await Movie.aggregate(pipeline);
         res.json(movies);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -66,8 +85,15 @@ router.get("/filter", async (req, res) => {
         if (genre) query.genres = { $in: [new RegExp(genre, "i")] };
         if (country) query.countries = { $in: [new RegExp(country, "i")] };
         if (language) query.languages = { $in: [new RegExp(language, "i")] };
+        if (req.query.poster === 'true') {
+            query.poster = { $exists: true, $ne: null };
+        }
 
-        const movies = await Movie.find(query).limit(20);
+        // Original code had .limit(20). Let's respect that or use query limit.
+        const limit = parseInt(req.query.limit) || 20;
+
+        // Apply sorting by year descending here as well to be consistent
+        const movies = await Movie.find(query).sort({ year: -1 }).limit(limit);
         res.json(movies);
     } catch (err) {
         res.status(500).json({ error: err.message });

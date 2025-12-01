@@ -5,6 +5,7 @@ import axios from 'axios';
 const MOVIES_SERVICE_URL = 'http://localhost:3001';
 const RANDOM_MOVIES_SERVICE_URL = 'http://localhost:3002';
 const RATING_SERVICE_URL = 'http://localhost:3003';
+const RECOMMENDER_SERVICE_URL = 'http://localhost:3004';
 
 export interface Movie {
     _id: string;
@@ -71,6 +72,14 @@ export const api = {
                 movie_id: movieId,
                 rating,
                 comment
+            });
+            return response.data;
+        }
+    },
+    recommender: {
+        getRecommendations: async (limit = 20) => {
+            const response = await axios.get(`${RECOMMENDER_SERVICE_URL}/recommendations`, {
+                params: { limit }
             });
             return response.data;
         }

@@ -39,6 +39,15 @@ services:
     networks:
       - microservices-net
 
+  recommendator-service:
+    build: ./recommendator-service
+    secrets:
+      - recommendator_service_env
+    ports:
+      - "3004:5000"
+    networks:
+      - microservices-net
+
   frontend-service:
     build: ./frontend-service
     ports:
@@ -59,6 +68,8 @@ secrets:
     file: ./movies-service/.env
   opinions_service_env:
     file: ./opinions-service/.env
+  recommendator_service_env:
+    file: ./recommendator-service/.env
 
 networks:
   microservices-net:

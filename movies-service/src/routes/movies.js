@@ -82,6 +82,12 @@ router.get("/filter", async (req, res) => {
         const query = {};
 
         if (year) query.year = parseInt(year);
+        if (req.query.minYear) {
+            query.year = { ...query.year, $gte: parseInt(req.query.minYear) };
+        }
+        if (req.query.maxYear) {
+            query.year = { ...query.year, $lte: parseInt(req.query.maxYear) };
+        }
         if (genre) query.genres = { $in: [new RegExp(genre, "i")] };
         if (country) query.countries = { $in: [new RegExp(country, "i")] };
         if (language) query.languages = { $in: [new RegExp(language, "i")] };

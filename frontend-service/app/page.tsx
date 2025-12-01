@@ -64,10 +64,10 @@ export default function Home() {
   };
 
   // Validate and replace hero movie if poster is broken
-  const validateAndReplaceHero = async () => {
-    if (!heroMovie) return;
+  const validateAndReplaceHero = async (currentHero: Movie | null) => {
+    if (!currentHero) return;
 
-    const posterValid = await hasPoster(heroMovie.poster);
+    const posterValid = await hasPoster(currentHero.poster);
 
     if (!posterValid) {
       // Try to find a replacement hero
@@ -102,12 +102,38 @@ export default function Home() {
           genre = 'Comedy';
           break;
         case 'trending':
-        case 'recommended':
         case 'featured':
+          genre = undefined;
+          break;
+        case 'recommended':
+          // For recommended, we want to fetch from the recommender service
+          // We'll handle this separately below
+          break;
         default:
-          genre = undefined; // No genre filter for these categories
+          genre = undefined;
           break;
       }
+
+      // Special handling for recommended category
+      if (category === 'recommended') {
+        for (let i = 0; i < 5; i++) {
+          // Fetch a batch of recommendations to find a valid one
+          const candidates = await api.recommender.getRecommendations(5);
+          if (candidates && candidates.length > 0) {
+            for (const candidate of candidates) {
+              if (!excludeIds.includes(candidate._id)) {
+                const posterValid = await hasPoster(candidate.poster);
+                if (posterValid) {
+                  return candidate;
+                }
+              }
+            }
+          }
+        }
+        return null;
+      }
+
+      // Try up to 5 times to find a valid replacement for other categories
 
       // Try up to 5 times to find a valid replacement
       for (let i = 0; i < 5; i++) {
@@ -207,8 +233,8 @@ export default function Home() {
         setFeaturedMovies(deduplicateMovies(randomFeatured));
 
         // 3. Fetch Catalog Rows (Movies Service)
-        // In a real app, we'd have specific endpoints or filters for these
-        const trending = await api.movies.getAll(1, 10, true);
+        // Trending Now: Movies from 2010 onwards
+        const trending = await api.movies.filter({ minYear: 2010, limit: 10, poster: true });
         setTrendingMovies(deduplicateMovies(trending));
 
         // Fetch genre-specific sections using random endpoint for variety
@@ -218,20 +244,18 @@ export default function Home() {
         const comedy = await api.random.getFeatured(10, 'Comedy', true);
         setComedyMovies(deduplicateMovies(comedy));
 
-        // 4. Fetch Recommended (Placeholder + Event Trigger)
-        // Triggering the "event" for the recommender service
-        console.log('[EVENT] User visited Home. Triggering recommendation engine update...');
-        // In the future, this would be: await api.events.emit('recommendations.requested', { userId: 'current-user' });
+        // 4. Fetch Recommended (Real Recommender Service)
+        console.log('[EVENT] User visited Home. Fetching recommendations...');
 
-        // For now, using random movies as recommendations
-        const recommended = await api.random.getFeatured(10);
+        // Fetch recommendations from the new service
+        const recommended = await api.recommender.getRecommendations(20);
         setRecommendedMovies(deduplicateMovies(recommended));
 
         setLoading(false);
 
         // After initial load, validate posters in the background and replace broken ones
         setTimeout(async () => {
-          await validateAndReplaceHero();
+          await validateAndReplaceHero(randomHero && randomHero.length > 0 ? randomHero[0] : null);
           await validateAndReplaceBrokenPosters(deduplicateMovies(randomFeatured), 'featured', setFeaturedMovies);
           await validateAndReplaceBrokenPosters(deduplicateMovies(trending), 'trending', setTrendingMovies);
           await validateAndReplaceBrokenPosters(deduplicateMovies(action), 'action', setActionMovies);
@@ -260,7 +284,7 @@ export default function Home() {
       <Navbar />
       <Hero movie={heroMovie} />
 
-      <div className="mt-[-80px] md:mt-[-120px] relative z-20 pl-4 md:pl-16 space-y-8">
+      <div className="mt-0 relative z-20 pl-4 md:pl-16 space-y-8">
         <MovieRow
           title="Featured"
           movies={featuredMovies}

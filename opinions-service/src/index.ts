@@ -4,15 +4,15 @@ import amqp from 'amqplib';
 import Opinion from './models/Opinion';
 import MovieAggregate from './models/MovieAggregate';
 
-dotenv.config();
+dotenv.config({ path: "/run/secrets/opinions_service_env" });
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/movies-db';
-const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://localhost';
+const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://rabbitmq';
 const EXCHANGE_NAME = 'ratings_exchange';
 const QUEUE_NAME = 'opinions_queue';
 const ROUTING_KEY = 'rating.created';
 
-async function processMessage(msg: amqp.ConsumeMessage | null) {
+export async function processMessage(msg: amqp.ConsumeMessage | null) {
     if (!msg) return;
 
     try {
@@ -61,12 +61,22 @@ async function processMessage(msg: amqp.ConsumeMessage | null) {
     }
 }
 
-async function start() {
+export async function start() {
     try {
         await mongoose.connect(MONGO_URI);
         console.log('Connected to MongoDB');
 
-        const connection = await amqp.connect(RABBITMQ_URL);
+        let connection;
+        while (true) {
+            try {
+                connection = await amqp.connect(RABBITMQ_URL);
+                break;
+            } catch (err) {
+                console.log("RabbitMQ not ready, retrying in 5s…");
+                await new Promise(res => setTimeout(res, 5000));
+            }
+        }
+
         const channel = await connection.createChannel();
 
         await channel.assertExchange(EXCHANGE_NAME, 'direct', { durable: true });
@@ -86,4 +96,6 @@ async function start() {
     }
 }
 
-start();
+if (require.main === module) {
+    start();
+}

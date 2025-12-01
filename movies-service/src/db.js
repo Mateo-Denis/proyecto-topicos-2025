@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 
-require('dotenv').config({ path: '/run/secrets/movies_service_env' });
+import dotenv from "dotenv";
+dotenv.config({ path: "/run/secrets/movies_service_env" });
+
 
 const MONGO_URI = process.env.MONGO_URI;
 

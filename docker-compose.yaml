@@ -22,14 +22,25 @@ services:
     ports:
       - "3003:3003"
     environment:
-      - RABBITMQ_URL=amqp://rabbitmq
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    networks:
+      - microservices-net
+
+  opinions-service:
+    build: ./opinions-service
+    secrets:
+      - opinions_service_env
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:5672
     depends_on:
       - rabbitmq
     networks:
       - microservices-net
 
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:4-management
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -39,6 +50,8 @@ services:
 secrets:
   movies_service_env:
     file: ./movies-service/.env
+  opinions_service_env:
+    file: ./opinions-service/.env
 
 networks:
   microservices-net:

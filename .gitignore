@@ -5,6 +5,14 @@ node_modules/
 
 # Testing
 coverage/
+.jest/
+__tests__/
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+jest.config.js
+.nyc_output/
 
 # Production
 build/

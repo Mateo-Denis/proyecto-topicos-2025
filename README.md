@@ -2,13 +2,9 @@
 
 Este proyecto es una aplicación de catálogo de películas basada en una arquitectura de microservicios. Utiliza Docker para la orquestación, MongoDB para la persistencia de datos y RabbitMQ para la comunicación asíncrona entre servicios.
 
-## Instrucciones especiales para el correcto funcionamiento
+## Aclaración especial
 
-Crear un archivo `.env` cuyo contenido sea la clave privada llamada MONGO_URI que fue entregada a la cátedra mediante la entrega de Moodle, junto al enlace de este repositorio.
-Este mismo archivo debe estar presente en los siguientes subdirectorios: 
-- [movies-service](/movies-service)
-- [opinions-service](/opinions-service)
-- [recommendator-service](/recommendator-service)
+Para facilitar la evaluación del proyecto, los archivos `.env` fueron entregados en el repositorio, conteniendo la clave privada llamada `MONGO_URI` para el acceso remoto a la base de datos en la nube.
 
 ## Arquitectura del Sistema
 

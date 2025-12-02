@@ -5,10 +5,10 @@ Este proyecto es una aplicación de catálogo de películas basada en una arquit
 ## Instrucciones especiales para el correcto funcionamiento
 
 Crear un archivo `.env` cuyo contenido sea la clave privada llamada MONGO_URI que fue entregada a la cátedra mediante la entrega de Moodle, junto al enlace de este repositorio.
-Este mismo archivo debe estar presente en los siguientes subdirectorios:
-    - [movies-service](/movies-service)
-    - [opinions-service](/opinions-service)
-    - [recommendator-service](/recommendator-service)
+Este mismo archivo debe estar presente en los siguientes subdirectorios: 
+- [movies-service](/movies-service)
+- [opinions-service](/opinions-service)
+- [recommendator-service](/recommendator-service)
 
 ## Arquitectura del Sistema
 

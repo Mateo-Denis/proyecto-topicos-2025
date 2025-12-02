@@ -8,23 +8,23 @@ El sistema está compuesto por varios microservicios que trabajan en conjunto. A
 
 ```mermaid
 graph TD
-    User[Usuario / Navegador]
+    User["Usuario / Navegador"]
     
     subgraph Frontend
-        NextJS[Frontend Service<br/>(Next.js - Puerto 3000)]
+        NextJS["Frontend Service\n(Next.js - Puerto 3000)"]
     end
     
     subgraph Backend Services
-        Movies[Movies Service<br/>(Node.js - Puerto 3001)]
-        Random[Random Movies Service<br/>(Node.js - Puerto 3002)]
-        Rating[Rating Service<br/>(Node.js - Puerto 3003)]
-        Recommender[Recommendator Service<br/>(Python - Puerto 3004)]
-        Opinions[Opinions Service<br/>(Node.js Worker)]
+        Movies["Movies Service\n(Node.js - Puerto 3001)"]
+        Random["Random Movies Service\n(Node.js - Puerto 3002)"]
+        Rating["Rating Service\n(Node.js - Puerto 3003)"]
+        Recommender["Recommendator Service\n(Python - Puerto 3004)"]
+        Opinions["Opinions Service\n(Node.js Worker)"]
     end
     
     subgraph Infrastructure
-        Mongo[(MongoDB Atlas)]
-        Rabbit[RabbitMQ<br/>(Message Broker)]
+        Mongo["MongoDB Atlas"]
+        Rabbit["RabbitMQ\n(Message Broker)"]
     end
 
     %% Frontend interactions

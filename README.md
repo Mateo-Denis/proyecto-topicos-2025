@@ -124,12 +124,4 @@ Para ejecutar este proyecto, necesitas tener instalado:
 2. Navega por la lista de películas.
 3. Haz clic en una película para ver sus detalles.
 4. Deja una calificación (1-5 estrellas) y un comentario. Esto enviará un mensaje a través de RabbitMQ.
-5. Observa cómo la sección de "Recomendados" (si está implementada en el frontend) sugiere títulos basados en el contenido.
-
-## Desarrollo
-
-Si deseas trabajar en un servicio específico, puedes detener el contenedor correspondiente y ejecutarlo localmente (asegurándote de tener Node.js o Python instalado según corresponda), o utilizar Docker Compose para reiniciar solo ese servicio:
-
-```bash
-docker-compose restart <nombre-del-servicio>
-```
+5. Observa cómo la sección de "Recomendados" sugiere títulos basados en el contenido.

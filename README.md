@@ -19,20 +19,20 @@ graph TD
     User["Usuario / Navegador"]
     
     subgraph Frontend
-        NextJS["Frontend Service\n(Next.js - Puerto 3000)"]
+        NextJS["Frontend Service (Next.js - Puerto 3000)"]
     end
     
     subgraph Backend Services
-        Movies["Movies Service\n(Node.js - Puerto 3001)"]
-        Random["Random Movies Service\n(Node.js - Puerto 3002)"]
-        Rating["Rating Service\n(Node.js - Puerto 3003)"]
-        Recommender["Recommendator Service\n(Python - Puerto 3004)"]
-        Opinions["Opinions Service\n(Node.js Worker)"]
+        Movies["Movies Service (Node.js - Puerto 3001)"]
+        Random["Random Movies Service (Node.js - Puerto 3002)"]
+        Rating["Rating Service (Node.js - Puerto 3003)"]
+        Recommender["Recommendator Service (Python - Puerto 3004)"]
+        Opinions["Opinions Service (Node.js Worker)"]
     end
     
     subgraph Infrastructure
         Mongo["MongoDB Atlas"]
-        Rabbit["RabbitMQ\n(Message Broker)"]
+        Rabbit["RabbitMQ (Message Broker)"]
     end
 
     %% Frontend interactions
